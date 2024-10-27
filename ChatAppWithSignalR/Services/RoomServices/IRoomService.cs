@@ -7,5 +7,6 @@ namespace ChatAppWithSignalR.Services.RoomServices
         Task<List<Room>> GetAllAsync();
         Task CreateAsync(Room room);
         Task DeleteAsync(Guid roomId, string currentUserId);
+        Task<Room> GetRoomById(string roomId);
     }
 }

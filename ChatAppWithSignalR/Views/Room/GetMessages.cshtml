@@ -1,0 +1,64 @@
+﻿@model ChatAppWithSignalR.ViewModels.RoomViewModel
+
+@{
+    ViewData["Title"] = "GetMessages";
+}
+
+
+<h2>Room</h2>
+
+<div id="messageList">
+    @foreach (var message in Model.Messages)
+    {
+        <div>
+            <p>@message.UserId: @message.MessageContent</p>
+        </div>
+    }
+</div>
+
+<form id="messageForm" method="post">
+    @Html.AntiForgeryToken()
+    <input type="text" name="message" id="messageInput" placeholder="Type your message" />
+    <button type="submit">Send</button>
+</form>
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.start().then(function () {
+            var roomId = "@Model.RoomId";
+
+            connection.invoke("JoinGroup", roomId).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("messageForm").addEventListener("submit", function (event) {
+            event.preventDefault()
+
+            var messageInput = document.getElementById("messageInput");
+            var message = messageInput.value;
+            var roomId = "@Model.RoomId";
+            var userId = "@Model.User.Identity.Name";
+
+            connection.invoke("SendMessage", roomId, userId, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            messageInput.value = "";
+        });
+
+        connection.on("ReceiveMessage", function (senderName, messageContent) {
+            var messageList = document.getElementById("messageList");
+            var p = document.createElement("p");
+            p.textContent = senderName + ": " + messageContent;
+            messageList.appendChild(p);
+        });
+    </script>
+}

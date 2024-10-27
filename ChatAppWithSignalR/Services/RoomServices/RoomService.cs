@@ -32,5 +32,10 @@ namespace ChatAppWithSignalR.Services.RoomServices
 
             await roomRepository.DeleteRoomAsync(roomId);
         }
+
+        public async Task<Room> GetRoomById(string roomId)
+        {
+            return await roomRepository.GetRoomAsync(Guid.Parse(roomId));
+        }
     }
 }

@@ -1,4 +1,5 @@
 using ChatAppWithSignalR.Data;
+using ChatAppWithSignalR.Hub;
 using ChatAppWithSignalR.Repository.MessageRepo;
 using ChatAppWithSignalR.Repository.RoomRepo;
 using ChatAppWithSignalR.Repository.UserRepo;
@@ -62,6 +63,9 @@ namespace ChatAppWithSignalR
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapHub<ChatHub>("/chatHub");
+
             app.MapRazorPages();
 
             app.Run();
