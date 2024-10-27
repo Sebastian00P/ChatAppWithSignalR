@@ -1,4 +1,4 @@
-﻿using ChatAppWithSignalR.ApplicationContext;
+﻿using ChatAppWithSignalR.Data;
 using ChatAppWithSignalR.Mappers;
 using ChatAppWithSignalR.ViewModels;
 using Microsoft.EntityFrameworkCore;

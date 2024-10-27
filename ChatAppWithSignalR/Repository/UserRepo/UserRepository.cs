@@ -1,6 +1,7 @@
-﻿using ChatAppWithSignalR.ApplicationContext;
+﻿using ChatAppWithSignalR.Data;
 using ChatAppWithSignalR.Mappers;
 using ChatAppWithSignalR.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatAppWithSignalR.Repository.UserRepo
 {
@@ -17,6 +18,19 @@ namespace ChatAppWithSignalR.Repository.UserRepo
         {
             var user = await _context.Users.FindAsync(id);
             return user == null ? throw new Exception("No user found") : user.ToModel();
+        }
+
+        public async Task<IEnumerable<ChatUser>> GetUsersAsync()
+        {
+            var users = await _context.Users.ToListAsync();
+            List<ChatUser> result = new();
+
+            users.ForEach(user =>
+            {
+                result.Add(user.ToModel());
+            });
+
+            return result;
         }
     }
 }
