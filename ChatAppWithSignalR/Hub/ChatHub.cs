@@ -34,11 +34,10 @@ namespace ChatAppWithSignalR.Hub
 
             await Clients.Group(chatRoomId).SendAsync(HubMethods.ReceiveMessage, userId, messageContent);
         }
-        public string GetConnectionId() => Context.ConnectionId;
 
-        public static class HubMethods
-        {
-            public static string ReceiveMessage = nameof(ReceiveMessage);
-        }
+    }
+    public static class HubMethods
+    {
+        public static string ReceiveMessage = nameof(ReceiveMessage);
     }
 }
