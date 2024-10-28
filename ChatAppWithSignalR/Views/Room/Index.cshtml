@@ -4,19 +4,19 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Dostępne Pokoje</h1>
 
 <p>
-    <a asp-controller="RoomController" asp-action="CreatePartialView">Create New</a>
+    <button id="createRoomLink" class="btn-create" onclick="location.href='#';">Stwórz nowy pokój</button>
 </p>
+<div class="createRoomPartialView" id="createRoom">
+
+</div>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ChatName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OwnerId)
+                Nazwa pokoju
             </th>
             <th></th>
         </tr>
@@ -24,18 +24,104 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            <td class="vertical-middle">
                 @Html.DisplayFor(modelItem => item.ChatName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OwnerId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            <td class="flex">
+                <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
+                    <input type="hidden" name="roomId" value="@item.Id" />
+                    <button type="submit" class="join-button">Dołącz</button>
+                </form>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let isModalLoaded = false;
+
+        document.getElementById("createRoomLink").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (!isModalLoaded) {
+                fetch('@Url.Action("CreatePartialView", "Room")')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Błąd podczas ładowania widoku.");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        document.getElementById("createRoom").innerHTML = data;
+                        isModalLoaded = true;
+                        document.getElementById("createRoom").style.display = 'flex';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Błąd podczas ładowania widoku.");
+                    });
+            } else {
+                document.getElementById("createRoom").style.display = 'flex';
+            }
+        });
+
+        window.closeModal = function () {
+            document.getElementById("createRoom").style.display = 'none';
+        };
+    });
+
+</script>
+<style>
+    .createRoomPartialView {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);   
+    }
+
+    .btn-create {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-create:hover {
+        background-color: #45a049;
+    }
+
+    .join-button {
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .join-button:hover {
+        background-color: #0056b3;
+    }
+
+    .flex{
+        display: flex;
+    }
+
+    .ml-auto{
+        margin-left: auto;
+    }
+
+    .vertical-middle{
+        vertical-align: middle;
+    }
+</style>

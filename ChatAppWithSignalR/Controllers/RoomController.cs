@@ -30,8 +30,10 @@ namespace ChatAppWithSignalR.Controllers
         public async Task<IActionResult> CreatePartialView()
         {
             string roomName = "";
-            return PartialView(roomName);
+            return PartialView("CreatePartialView", roomName);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoom(string chatName)
         {
             if (!ModelState.IsValid)
@@ -45,13 +47,14 @@ namespace ChatAppWithSignalR.Controllers
                 OwnerId = owner.Id,
                 Id = Guid.NewGuid(),
                 MessageIds = new List<Guid>(),
-                UserIds = new List<string>() { owner.Id },
+                UserIds = new List<string> { owner.Id },
                 ChatName = chatName
             };
             await _roomService.CreateAsync(room);
 
             return RedirectToAction("Index");
         }
+
 
         public async Task<IActionResult> GetMessages(string roomId)
         {
@@ -60,13 +63,15 @@ namespace ChatAppWithSignalR.Controllers
             {
                 return NotFound();
             }
-
+            var room = await _roomService.GetRoomById(roomId);
+            var roomName = room.ChatName;
             Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(RoomId));
             var model = new RoomViewModel()
             {
                 Messages = Messages,
                 RoomId = RoomId,
-                User = User
+                User = User,
+                RoomName = roomName
             };
 
             return View(model);
