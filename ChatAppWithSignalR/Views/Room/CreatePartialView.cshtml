@@ -1,11 +1,24 @@
-﻿@model string
+﻿@model ChatAppWithSignalR.ViewModels.CreateRoomViewModel
 
 <div class="room-form">
     <form asp-action="CreateRoom" asp-controller="Room" method="post">
         @Html.AntiForgeryToken()
 
-        <label for="chatName">Nazwa pokoju:</label>
-        <input type="text" id="chatName" name="chatName" placeholder="Wpisz nazwę pokoju" required />
+        <label for="RoomName">Nazwa pokoju:</label>
+        <input type="text" id="chatName" name="RoomName" placeholder="Wpisz nazwę pokoju" required />
+
+        <div class="checkbox mb-3">
+            <label for="HasPassword" class="form-label">
+                <input type="checkbox" class="form-check-input" id="hasPassword" name="HasPassword" value="false" />
+                Dodać hasło?
+            </label>
+        </div>
+
+        <div id="pass-section" class="pass-section" hidden>
+            <label for="Password">Hasło:</label>
+            <input type="password" id="Password" name="Password" placeholder="Wpisz hasło" />
+        </div>
+
         <div class="flex">
             <button type="submit">Zapisz</button>
             <button type="button" class="cancel-button" onclick="document.getElementById('createRoom').style.display='none';">Anuluj</button>
@@ -13,7 +26,13 @@
     </form>
 </div>
 
+
 <style>
+    .pass-section{
+        display: flex;
+        flex-direction: column;
+    }
+
     .room-form {
         display: flex;
         flex-direction: column;
@@ -33,12 +52,14 @@
         color: #333;
     }
 
-    .room-form input[type="text"] {
+    .room-form input[type="text"],
+    .room-form input[type="password"] {
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 4px;
         margin-bottom: 16px;
         font-size: 1rem;
+        width: 250px;
     }
 
     .room-form button {

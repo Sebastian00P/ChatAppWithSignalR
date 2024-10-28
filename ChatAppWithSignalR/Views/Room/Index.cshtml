@@ -39,6 +39,32 @@
 </table>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        document.body.addEventListener("click", function (event) {
+            if (event.target.id === "hasPassword") {
+                const passSection = document.getElementById("pass-section");
+                const passwordInput = document.getElementById("Password");
+                const checkbox = event.target;
+
+                checkbox.value = checkbox.checked ? "true" : "false";
+
+                if (passSection && passwordInput) {
+                    passSection.hidden = !checkbox.checked;
+
+                    if (checkbox.checked) {
+                        passwordInput.setAttribute("required", "required");
+                        passwordInput.setAttribute("minlength", "5");
+                    } else {
+                        passwordInput.removeAttribute("required");
+                        passwordInput.removeAttribute("minlength");
+                        passwordInput.value = "";
+                    }
+                }
+            }
+        });
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
         let isModalLoaded = false;
 
         document.getElementById("createRoomLink").addEventListener("click", function (e) {

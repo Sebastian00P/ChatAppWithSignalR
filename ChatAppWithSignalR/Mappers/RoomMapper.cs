@@ -12,6 +12,8 @@ namespace ChatAppWithSignalR.Mappers
                 Id = roomEntity.ChatRoomId,
                 ChatName = roomEntity.ChatName,
                 OwnerId = roomEntity.OwnerId,
+                HasPassword = roomEntity.HasPassword,
+                Password = roomEntity.Password,
                 MessageIds = roomEntity.Messages?.Select(m => m.MessageId).ToList() ?? new(),
                 UserIds = roomEntity.Users?.Select(u => u.Id).ToList() ?? new(),
             };
@@ -24,6 +26,8 @@ namespace ChatAppWithSignalR.Mappers
                 ChatRoomId = room.Id,
                 ChatName = room.ChatName,
                 IsActive = true,
+                HasPassword = room.HasPassword,
+                Password = room.Password,
                 OwnerId = room.OwnerId,
             };
         }

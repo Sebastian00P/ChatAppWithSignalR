@@ -7,6 +7,8 @@
         public required string ChatName { get; set; }
 
         public required string OwnerId { get; set; }
+        public required bool HasPassword { get; set; }
+        public string? Password { get; set; }
 
         public List<Guid>? MessageIds { get; set; }
 

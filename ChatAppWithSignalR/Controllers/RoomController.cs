@@ -1,4 +1,5 @@
-﻿using ChatAppWithSignalR.Services.MessageServices;
+﻿using ChatAppWithSignalR.Helpers;
+using ChatAppWithSignalR.Services.MessageServices;
 using ChatAppWithSignalR.Services.RoomServices;
 using ChatAppWithSignalR.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -29,18 +30,21 @@ namespace ChatAppWithSignalR.Controllers
         }
         public async Task<IActionResult> CreatePartialView()
         {
-            string roomName = "";
-            return PartialView("CreatePartialView", roomName);
+            var model = new CreateRoomViewModel();
+            return PartialView("CreatePartialView", model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateRoom(string chatName)
+        public async Task<IActionResult> CreateRoom(CreateRoomViewModel chatRoom)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
-
+            if (chatRoom.HasPassword)
+            {
+                chatRoom.Password = PasswordHasher.CreateMD5FromString(chatRoom.Password);
+            }
             var owner = await _userManager.GetUserAsync(User);
             var room = new Room
             {
@@ -48,7 +52,9 @@ namespace ChatAppWithSignalR.Controllers
                 Id = Guid.NewGuid(),
                 MessageIds = new List<Guid>(),
                 UserIds = new List<string> { owner.Id },
-                ChatName = chatName
+                ChatName = chatRoom.RoomName,
+                HasPassword = chatRoom.HasPassword,
+                Password = chatRoom.Password,
             };
             await _roomService.CreateAsync(room);
 
