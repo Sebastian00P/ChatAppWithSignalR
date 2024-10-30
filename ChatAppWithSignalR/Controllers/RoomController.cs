@@ -71,14 +71,7 @@ namespace ChatAppWithSignalR.Controllers
             }
             var room = await _roomService.GetRoomById(roomId);
             var providedPassword = "";
-            if (room.HasPassword)
-            {
-                providedPassword = PasswordHasher.CreateMD5FromString(password);
-                if(providedPassword != room.Password)
-                {
-                    return BadRequest(new { message = "Podane hasło jest nieprawidłowe." });
-                }
-            }
+           
             var roomName = room.ChatName;
             Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(RoomId));
             var model = new RoomViewModel()
@@ -88,6 +81,18 @@ namespace ChatAppWithSignalR.Controllers
                 User = User,
                 RoomName = roomName
             };
+            if (room.HasPassword && password != null)
+            {
+                providedPassword = PasswordHasher.CreateMD5FromString(password);
+                if (providedPassword != room.Password)
+                {
+                    return BadRequest(new { message = "Podane hasło jest nieprawidłowe." });
+                }
+                else
+                {
+                    return RedirectToAction("GetMessages", new { roomId });
+                }
+            }
 
             return View(model);
         }
