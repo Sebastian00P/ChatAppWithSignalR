@@ -5,6 +5,7 @@ using ChatAppWithSignalR.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ChatAppWithSignalR.Controllers
 {
@@ -62,8 +63,10 @@ namespace ChatAppWithSignalR.Controllers
         }
 
 
-        public async Task<IActionResult> GetMessages(string roomId, string? password)
+        public async Task<IActionResult> GetMessages(string roomId, string? password = "")
         {
+            this.HttpContext.Session.Remove("VM");
+
             RoomId = roomId;
             if (string.IsNullOrEmpty(RoomId))
             {
@@ -78,23 +81,45 @@ namespace ChatAppWithSignalR.Controllers
             {
                 Messages = Messages,
                 RoomId = RoomId,
-                User = User,
-                RoomName = roomName
+                UserId = User.Identity.Name,
+                RoomName = roomName,
+                Room = room,
+                Password = password
             };
-            if (room.HasPassword && password != null)
+
+            try
             {
+                this.HttpContext.Session.SetString("VM", JsonConvert.SerializeObject(model));
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            if (!string.IsNullOrEmpty(password))
                 providedPassword = PasswordHasher.CreateMD5FromString(password);
+
+            if (room.HasPassword)
+            {
                 if (providedPassword != room.Password)
                 {
                     return BadRequest(new { message = "Podane hasło jest nieprawidłowe." });
                 }
-                else
-                {
-                    return RedirectToAction("GetMessages", new { roomId });
-                }
             }
 
-            return View(model);
+            return RedirectToAction(nameof(GetRm), "Room");
+        }
+
+
+
+        public async Task<IActionResult> GetRm()
+        {
+            RoomViewModel model = JsonConvert.DeserializeObject<RoomViewModel>(this.HttpContext.Session.GetString("VM"));
+            model.Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(model.RoomId));
+
+            return View("GetMessages", model);
         }
 
         public async Task<IActionResult> PasswordPartialView(string roomId)
