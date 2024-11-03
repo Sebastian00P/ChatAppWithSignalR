@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Dostępne Pokoje</h1>
+<h1 class="text-white">Dostępne Pokoje</h1>
 
 <p>
     <button id="createRoomLink" class="btn-create" onclick="location.href='#';">Stwórz nowy pokój</button>
@@ -15,19 +15,19 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th class="text-white">
                 Nazwa pokoju
             </th>
-            <th></th>
+            <th class="text-white"></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td class="vertical-middle">
+            <td class="vertical-middle text-white">
                 @Html.DisplayFor(modelItem => item.ChatName)
             </td>
-            <td class="flex">
+            <td class="table-cell text-white text-end">
                 <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
                     <input type="hidden" name="roomId" value="@item.Id" />
                     <button type="submit" class="join-button">Dołącz</button>
@@ -99,6 +99,7 @@
 
 </script>
 <style>
+    
     .createRoomPartialView {
         position: absolute;
         top: 50%;
@@ -139,8 +140,8 @@
         background-color: #0056b3;
     }
 
-    .flex{
-        display: flex;
+    .table-cell{
+        display: table-cell;
     }
 
     .ml-auto{

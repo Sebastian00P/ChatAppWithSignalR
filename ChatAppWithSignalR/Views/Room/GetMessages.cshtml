@@ -5,13 +5,13 @@
 }
 
 
-<h2 class="chat-header">Pokój @Model.RoomName</h2>
+<h2 class="chat-header text-white">Pokój @Model.RoomName</h2>
 
 <div id="messageList" class="message-list">
     @foreach (var message in Model.Messages)
     {
         <div class="message-item">
-            <p class="message-content"><strong>@message.UserId:</strong> @message.MessageContent</p>
+            <p class="message-content text-white"><strong>@message.UserId:</strong> @message.MessageContent</p>
         </div>
     }
 </div>
@@ -60,7 +60,7 @@
             messageItem.className = "message-item";
 
             var p = document.createElement("p");
-            p.className = "message-content";
+            p.className = "message-content text-white";
 
             var strong = document.createElement("strong");
             strong.textContent = senderName + ": ";
@@ -82,8 +82,6 @@
         background-color: #f2f2f2;
         color: #333;
         margin: 0;
-        padding: 20px;
-        overflow-x: hidden;
     }
 
     .chat-header {
@@ -96,12 +94,12 @@
     .message-list {
         max-height: 400px;
         overflow-y: auto;
-        background-color: #fff;
-        border: 1px solid #ddd;
+        background-color: #172a46;
+        border: 1px solid #09182d;
         border-radius: 5px;
         padding: 10px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 40px rgba(10, 25, 47, 1);
     }
 
     .message-item {

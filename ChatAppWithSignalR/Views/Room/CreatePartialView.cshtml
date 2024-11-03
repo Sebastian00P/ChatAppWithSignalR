@@ -4,13 +4,13 @@
     <form asp-action="CreateRoom" asp-controller="Room" method="post">
         @Html.AntiForgeryToken()
 
-        <label for="RoomName">Nazwa pokoju:</label>
+        <label for="RoomName" class="text-white">Nazwa pokoju:</label>
         <input type="text" id="chatName" name="RoomName" placeholder="Wpisz nazwę pokoju" required />
 
         <div class="checkbox mb-3">
             <label for="HasPassword" class="form-label">
                 <input type="checkbox" class="form-check-input" id="hasPassword" name="HasPassword" value="false" />
-                Dodać hasło?
+                <strong class="text-white">Dodać hasło?</strong>
             </label>
         </div>
 
@@ -40,10 +40,10 @@
         max-width: 300px;
         margin: 20px auto;
         padding: 20px;
-        border: 1px solid #ddd;
+        border: 1px solid #172a46;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        background-color: #f9f9f9;
+        box-shadow: 0 4px 40px rgba(10, 25, 47, 1);
+        background-color: #172a46;
     }
 
     .room-form label {
