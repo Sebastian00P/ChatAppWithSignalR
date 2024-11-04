@@ -12,6 +12,9 @@
 <div class="createRoomPartialView" id="createRoom">
 
 </div>
+<div class="createRoomPartialView" id="passwordRoom">
+
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -27,12 +30,19 @@
             <td class="vertical-middle text-white">
                 @Html.DisplayFor(modelItem => item.ChatName)
             </td>
-            <td class="table-cell text-white text-end">
-                <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
-                    <input type="hidden" name="roomId" value="@item.Id" />
-                    <button type="submit" class="join-button">Dołącz</button>
-                </form>
-            </td>
+            @if(!item.HasPassword){
+                <td class="table-cell text-white text-end">
+                    <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
+                        <input type="hidden" name="roomId" value="@item.Id" />
+                        <button type="submit" class="join-button">Dołącz</button>
+                    </form>
+                </td>
+            }else
+            {
+                <td class="table-cell text-white text-end">
+                    <button id="passwordRoomLink" class="join-button" data-id="@item.Id" onclick="location.href='#';">Dołącz</button>
+                </td>
+            }
         </tr>
 }
     </tbody>
@@ -97,7 +107,44 @@
         };
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        let isPassModalLoaded = false;
+        let roomId = document.getElementById("passwordRoomLink").getAttribute("data-id");
+
+        document.getElementById("passwordRoomLink").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (!isPassModalLoaded) {
+                const url = `@Url.Action("PasswordPartialView", "Room")?roomId=${roomId}`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Błąd podczas ładowania widoku.");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        document.getElementById("passwordRoom").innerHTML = data;
+                        isPassModalLoaded = true;
+                        document.getElementById("passwordRoom").style.display = 'flex';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Błąd podczas ładowania widoku.");
+                    });
+            } else {
+                document.getElementById("passwordRoom").style.display = 'flex';
+            }
+        });
+
+        window.closeModal = function () {
+            document.getElementById("passwordRoom").style.display = 'none';
+        };
+    });
+
 </script>
+
 <style>
     
     .createRoomPartialView {

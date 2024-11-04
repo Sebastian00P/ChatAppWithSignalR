@@ -62,7 +62,7 @@ namespace ChatAppWithSignalR.Controllers
         }
 
 
-        public async Task<IActionResult> GetMessages(string roomId)
+        public async Task<IActionResult> GetMessages(string roomId, string? password)
         {
             RoomId = roomId;
             if (string.IsNullOrEmpty(RoomId))
@@ -70,6 +70,15 @@ namespace ChatAppWithSignalR.Controllers
                 return NotFound();
             }
             var room = await _roomService.GetRoomById(roomId);
+            var providedPassword = "";
+            if (room.HasPassword)
+            {
+                providedPassword = PasswordHasher.CreateMD5FromString(password);
+                if(providedPassword != room.Password)
+                {
+                    return BadRequest(new { message = "Podane hasło jest nieprawidłowe." });
+                }
+            }
             var roomName = room.ChatName;
             Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(RoomId));
             var model = new RoomViewModel()
@@ -82,5 +91,16 @@ namespace ChatAppWithSignalR.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> PasswordPartialView(string roomId)
+        {
+            var model = new PasswordRoomViewModel()
+            {
+                RoomId = roomId,
+                Password = ""
+            };
+            return PartialView("PasswordPartialView", model);
+        }
+
     }
 }
