@@ -45,7 +45,7 @@
             var messageInput = document.getElementById("messageInput");
             var message = messageInput.value;
             var roomId = "@Model.RoomId";
-            var userId = "@Model.User.Identity.Name";
+            var userId = "@Model.UserId";
 
             connection.invoke("SendMessage", roomId, userId, message).catch(function (err) {
                 return console.error(err.toString());

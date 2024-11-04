@@ -36,7 +36,8 @@ namespace ChatAppWithSignalR.Repository.MessageRepo
 
         public async Task<IEnumerable<Message>> GetMessagesInRoomAsync(Guid roomId)
         {
-            var messages = await _context.Messages.Where(m => m.ChatRoomId == roomId).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.ChatRoomId == roomId)
+                .OrderBy(x => x.CreationTime).ToListAsync();
             List<Message> result = new();
 
             messages.ForEach(message =>

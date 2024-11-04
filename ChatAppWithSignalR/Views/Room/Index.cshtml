@@ -170,6 +170,9 @@
                     body: formData
                 })
                     .then(response => {
+                        if (response.statusCode == 400) {
+                            alert(error.message);
+                        }
                         if (response.redirected) {
                             window.location.href = response.url;
                         } else if (!response.ok) {
