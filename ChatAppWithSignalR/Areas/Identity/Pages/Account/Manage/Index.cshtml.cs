@@ -102,7 +102,7 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
-
+            
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
@@ -112,6 +112,12 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+            var userExist = await _userManager.FindByNameAsync(Input.Username);
+            if (userExist != null)
+            {
+                StatusMessage = "Użytkownik o tej nazwie już istnieje!";
+                return RedirectToPage();
             }
             if(Input.Username != user.UserName)
             {
