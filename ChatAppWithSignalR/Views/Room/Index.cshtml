@@ -26,10 +26,18 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
-            <td class="vertical-middle text-white">
-                @Html.DisplayFor(modelItem => item.ChatName)
-            </td>
+            <tr>
+                <td class="vertical-middle text-white">
+                    <div class="flex">
+                    @if (item.HasPassword)
+                    {
+                        <span class="material-symbols-outlined">
+                            lock
+                        </span>
+                    }
+                    @Html.DisplayFor(modelItem => item.ChatName)
+                    </div>
+                </td>
             @if(!item.HasPassword){
                 <td class="table-cell text-white text-end">
                     <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
