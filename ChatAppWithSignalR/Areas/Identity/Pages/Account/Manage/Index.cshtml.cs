@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using ChatAppWithSignalR.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,13 +17,16 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IUserService _userService;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _userService = userService;
         }
 
         /// <summary>
@@ -60,6 +64,8 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
             [Display(Name = "User name")]
             public string Username { get; set; } = "";
+            [Display(Name = "Photo")]
+            public IFormFile UserPhoto { get; set; }
 
         }
 
@@ -67,14 +73,17 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var photo = await _userService.GetUserPhoto(user.Id);
 
             Username = userName;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                Username = userName
+                Username = userName,
+                UserPhoto = null
             };
+            ViewData["UserPhotoPath"] = photo;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -114,7 +123,7 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
                 }
             }
             var userExist = await _userManager.FindByNameAsync(Input.Username);
-            if (userExist != null)
+            if (userExist != null && user.Id != userExist.Id)
             {
                 StatusMessage = "Użytkownik o tej nazwie już istnieje!";
                 return RedirectToPage();
@@ -127,6 +136,19 @@ namespace ChatAppWithSignalR.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set User Name.";
                     return RedirectToPage();
                 }
+            }
+            string base64Photo = null;
+            if (Input.UserPhoto != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await Input.UserPhoto.CopyToAsync(memoryStream);
+                    byte[] photoBytes = memoryStream.ToArray();
+                    base64Photo = Convert.ToBase64String(photoBytes);
+                }
+
+                // Save the base64 string as needed, e.g., in the database or a property
+                await _userService.UpdateUserPhotoAsync(user.Id, base64Photo);
             }
 
             await _signInManager.RefreshSignInAsync(user);

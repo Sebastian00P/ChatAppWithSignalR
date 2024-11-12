@@ -11,5 +11,6 @@ namespace ChatAppWithSignalR.Data
         public DbSet<MessageEntity> Messages { get; set; }
 
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<UserDataEntity> UserData { get; set; }
     }
 }

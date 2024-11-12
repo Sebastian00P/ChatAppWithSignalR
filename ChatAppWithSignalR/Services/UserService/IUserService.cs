@@ -6,5 +6,7 @@ namespace ChatAppWithSignalR.Services.UserService
     {
         Task<List<ChatUser>> GetAllAsync();
         Task<ChatUser> GetUserByIdAsync(string id);
+        Task<string> GetUserPhoto(string userId);
+        Task UpdateUserPhotoAsync(string userId, string photo);
     }
 }

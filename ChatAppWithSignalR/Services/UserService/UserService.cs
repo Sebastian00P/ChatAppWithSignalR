@@ -21,5 +21,20 @@ namespace ChatAppWithSignalR.Services.UserService
             var user = chatUserRepository.GetUserAsync(id);
             return user;
         }
+
+        public async Task<string> GetUserPhoto(string userId)
+        {
+            var userData = await chatUserRepository.GetUserData(userId);
+            if (userData.UserPhoto == null)
+            {
+                userData.UserPhoto = "";
+            }
+            return userData.UserPhoto;
+        }
+
+        public async Task UpdateUserPhotoAsync(string userId, string photo)
+        {
+            await chatUserRepository.SavePhotoAsync(userId, photo);
+        }
     }
 }
