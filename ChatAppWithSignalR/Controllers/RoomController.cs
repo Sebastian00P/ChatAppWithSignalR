@@ -1,6 +1,7 @@
 ﻿using ChatAppWithSignalR.Helpers;
 using ChatAppWithSignalR.Services.MessageServices;
 using ChatAppWithSignalR.Services.RoomServices;
+using ChatAppWithSignalR.Services.UserService;
 using ChatAppWithSignalR.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,14 +16,16 @@ namespace ChatAppWithSignalR.Controllers
         private readonly IRoomService _roomService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMessageService _messageService;
+        private readonly IUserService _userService;
         private static string RoomId = "";
         public List<Message> Messages { get; set; } = new List<Message>();
 
-        public RoomController(IRoomService roomService, UserManager<IdentityUser> userManager, IMessageService messageService)
+        public RoomController(IRoomService roomService, UserManager<IdentityUser> userManager, IMessageService messageService, IUserService userService)
         {
             _roomService = roomService;
             _userManager = userManager;
             _messageService = messageService;
+            _userService = userService;
         }
         public async Task<IActionResult> Index()
         {
@@ -77,6 +80,15 @@ namespace ChatAppWithSignalR.Controllers
            
             var roomName = room.ChatName;
             Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(RoomId));
+            foreach (var message in Messages)
+            {
+                var findedUser = await _userManager.FindByEmailAsync(message.UserId);
+                if(findedUser == null)
+                {
+                    findedUser = await _userManager.FindByNameAsync(message.UserId);
+                }
+                message.UserPhoto = await _userService.GetUserPhoto(findedUser.Id);
+            }
             var model = new RoomViewModel()
             {
                 Messages = Messages,
@@ -118,7 +130,15 @@ namespace ChatAppWithSignalR.Controllers
         {
             RoomViewModel model = JsonConvert.DeserializeObject<RoomViewModel>(this.HttpContext.Session.GetString("VM"));
             model.Messages = await _messageService.GetAllByRoomIdAsync(Guid.Parse(model.RoomId));
-
+            foreach (var message in model.Messages)
+            {
+                var findedUser = await _userManager.FindByEmailAsync(message.UserId);
+                if (findedUser == null)
+                {
+                    findedUser = await _userManager.FindByNameAsync(message.UserId);
+                }
+                message.UserPhoto = await _userService.GetUserPhoto(findedUser.Id);
+            }
             return View("GetMessages", model);
         }
 

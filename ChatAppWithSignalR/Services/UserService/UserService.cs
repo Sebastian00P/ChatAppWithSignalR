@@ -1,4 +1,5 @@
-﻿using ChatAppWithSignalR.Repository.UserRepo;
+﻿using ChatAppWithSignalR.Helpers;
+using ChatAppWithSignalR.Repository.UserRepo;
 using ChatAppWithSignalR.ViewModels;
 
 namespace ChatAppWithSignalR.Services.UserService
@@ -27,7 +28,7 @@ namespace ChatAppWithSignalR.Services.UserService
             var userData = await chatUserRepository.GetUserData(userId);
             if (userData.UserPhoto == null)
             {
-                userData.UserPhoto = "";
+                userData.UserPhoto = DefaultImageSetter.GetDefaultPhoto();
             }
             return userData.UserPhoto;
         }

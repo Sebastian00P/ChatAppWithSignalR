@@ -1,4 +1,6 @@
-﻿namespace ChatAppWithSignalR.ViewModels
+﻿using ChatAppWithSignalR.Services.UserService;
+
+namespace ChatAppWithSignalR.ViewModels
 {
     public class Message
     {
@@ -8,5 +10,7 @@
         public bool IsActive { get; set; }
         public DateTime CreationTime { get; set; }
         public Guid ChatRoomId { get; set; }
+        public string? UserPhoto {  get; set; }
+       
     }
 }

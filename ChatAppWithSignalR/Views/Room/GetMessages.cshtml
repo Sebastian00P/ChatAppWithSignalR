@@ -1,7 +1,15 @@
-﻿@model ChatAppWithSignalR.ViewModels.RoomViewModel
-
+﻿@using ChatAppWithSignalR.Services.UserService
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@model ChatAppWithSignalR.ViewModels.RoomViewModel
+@inject IUserService userService
 @{
     ViewData["Title"] = "GetMessages";
+
+    var userId = UserManager.GetUserId(User);
+
+    var userPhotoBase64 = await userService.GetUserPhoto(userId);
+
 }
 
 
@@ -11,7 +19,11 @@
     @foreach (var message in Model.Messages)
     {
         <div class="message-item">
-            <p class="message-content text-white"><strong>@message.UserId:</strong> @message.MessageContent</p>
+            <p class="message-content text-white">
+                <img src="data:image/jpeg;base64,@message.UserPhoto" alt="User Photo" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+                <strong>@message.UserId:</strong> 
+                @message.MessageContent
+            </p>
         </div>
     }
 </div>
@@ -64,8 +76,16 @@
 
             var strong = document.createElement("strong");
             strong.textContent = senderName + ": ";
+            var userPhotoBase64 = "@userPhotoBase64";
 
-           
+            var img = document.createElement("img");
+            img.src = "data:image/jpeg;base64," + userPhotoBase64.replaceAll("&#x2B;", "+");
+            img.alt = "User Photo";
+            img.classList.add("rounded-circle");
+            img.style.width = "30px";
+            img.style.height = "30px";
+            img.style.marginRight = "10px";
+            p.appendChild(img);
             p.appendChild(strong);
 
             p.appendChild(document.createTextNode(messageContent));
@@ -73,6 +93,13 @@
             messageItem.appendChild(p);
             messageList.appendChild(messageItem);
         });
+
+        window.onload = function () {
+            var messageList = document.getElementById("messageList");
+
+            // Scroll to the bottom once the page is fully loaded
+            messageList.scrollTop = messageList.scrollHeight;
+        };
     </script>
 }
 
@@ -100,6 +127,7 @@
         padding: 10px;
         margin-bottom: 20px;
         box-shadow: 0 4px 40px rgba(10, 25, 47, 1);
+        scroll-behavior: smooth;
     }
 
     .message-item {
@@ -113,6 +141,7 @@
 
     .message-content {
         margin: 0;
+        overflow-wrap: break-word;
     }
 
     .message-form {
