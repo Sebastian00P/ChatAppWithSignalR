@@ -25,34 +25,36 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
                 <td class="vertical-middle text-white">
                     <div class="flex">
-                    @if (item.HasPassword)
-                    {
-                        <span class="material-symbols-outlined">
-                            lock
-                        </span>
-                    }
-                    @Html.DisplayFor(modelItem => item.ChatName)
+                        @if (item.HasPassword)
+                        {
+                            <span class="material-symbols-outlined">lock</span>
+                        }
+                        @Html.DisplayFor(modelItem => item.ChatName)
                     </div>
                 </td>
-            @if(!item.HasPassword){
-                <td class="table-cell text-white text-end">
-                    <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
-                        <input type="hidden" name="roomId" value="@item.Id" />
-                        <button type="submit" class="join-button">Dołącz</button>
-                    </form>
-                </td>
-            }else
-            {
-                <td class="table-cell text-white text-end">
-                    <button id="passwordRoomLink" class="join-button" data-id="@item.Id" onclick="location.href='#';">Dołącz</button>
-                </td>
-            }
-        </tr>
-}
+                @if (!item.HasPassword)
+                {
+                    <td class="table-cell text-white text-end">
+                        <form asp-action="GetMessages" asp-controller="Room" method="get" class="ml-auto">
+                            <input type="hidden" name="roomId" value="@item.Id" />
+                            <button type="submit" class="join-button">Dołącz</button>
+                        </form>
+                    </td>
+                }
+                else
+                {
+                    <td class="table-cell text-white text-end">
+                        <button class="join-button password-room-link" data-id="@item.Id">Dołącz</button>
+                    </td>
+                }
+            </tr>
+        }
+
     </tbody>
 </table>
 <script>
@@ -117,39 +119,43 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         let isPassModalLoaded = false;
-        let roomId = document.getElementById("passwordRoomLink").getAttribute("data-id");
 
-        document.getElementById("passwordRoomLink").addEventListener("click", function (e) {
-            e.preventDefault();
+        document.querySelectorAll(".password-room-link").forEach(button => {
+            button.addEventListener("click", function (e) {
+                e.preventDefault();
 
-            if (!isPassModalLoaded) {
-                const url = `@Url.Action("PasswordPartialView", "Room")?roomId=${roomId}`;
+                let roomId = this.getAttribute("data-id"); // Pobranie roomId dla konkretnego przycisku
 
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Błąd podczas ładowania widoku.");
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        document.getElementById("passwordRoom").innerHTML = data;
-                        isPassModalLoaded = true;
-                        document.getElementById("passwordRoom").style.display = 'flex';
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert("Błąd podczas ładowania widoku.");
-                    });
-            } else {
-                document.getElementById("passwordRoom").style.display = 'flex';
-            }
+                if (!isPassModalLoaded) {
+                    const url = `@Url.Action("PasswordPartialView", "Room")?roomId=${roomId}`;
+
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Błąd podczas ładowania widoku.");
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+                            document.getElementById("passwordRoom").innerHTML = data;
+                            isPassModalLoaded = true;
+                            document.getElementById("passwordRoom").style.display = 'flex';
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert("Błąd podczas ładowania widoku.");
+                        });
+                } else {
+                    document.getElementById("passwordRoom").style.display = 'flex';
+                }
+            });
         });
 
         window.closeModal = function () {
             document.getElementById("passwordRoom").style.display = 'none';
         };
     });
+
 
     //passModalErrorHandler
 
