@@ -124,7 +124,7 @@
             button.addEventListener("click", function (e) {
                 e.preventDefault();
 
-                let roomId = this.getAttribute("data-id"); // Pobranie roomId dla konkretnego przycisku
+                let roomId = this.getAttribute("data-id");
 
                 if (!isPassModalLoaded) {
                     const url = `@Url.Action("PasswordPartialView", "Room")?roomId=${roomId}`;
